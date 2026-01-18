@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le bien-être animal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CONFIGURATION GÉNÉRALE */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #27ae60;
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 30px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header.shrink {
+            padding: 10px 15px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            transition: font-size 0.3s ease;
+        }
+
+        header.shrink h1 {
+            font-size: 1.3rem;
+        }
+
+        nav {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: white;
+            color: #27ae60;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        nav button:hover {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        /* CONTENU PRINCIPAL */
+        main {
+            flex: 1;
+            padding-top: 180px;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* CARTE DE L'IMAGE */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #27ae60;
+            overflow: hidden;
+        }
+
+        .info-card h3 {
+            color: #27ae60;
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .img-container {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* GRAPHIQUE CONTAINER */
+        .chart-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 600px; /* Hauteur forcée pour que le graphique soit visible */
+            margin: 0 auto 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* MODAL (CSS AJOUTÉ) */
+        #modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; 
+            padding: 0;
+            border-radius: 10px;
+            width: 80%; 
+            max-width: 700px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            background-color: #27ae60;
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            color: white;
+            background: none;
+            border: none;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover { color: #ddd; }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .qa-card {
+            background: #f9f9f9;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .q-text { display: block; font-weight: bold; margin-bottom: 5px; color: #444; }
+        .a-text { color: #666; font-style: italic; }
+
+        /* BADGES DE NOTES (CSS AJOUTÉ) */
+        .note-badge {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .note-green { background-color: #27ae60; }
+        .note-yellow { background-color: #f39c12; }
+        .note-red { background-color: #e74c3c; }
+
+        /* ANIMATION REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #27ae60;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 30px 15px;
+        }
+
+        footer .left,
+        footer .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer .left p, footer .right p {
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            nav { flex-direction: column; gap: 8px; }
+            footer { flex-direction: column; gap: 15px; }
+            footer .left, footer .right { width: 100%; }
+            .modal-content { width: 95%; margin: 20% auto; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="header">    
+    <h1>Bien-être des animaux dans les parcs animaliers</h1>
+    <nav>
+        <button onclick="location.href='index.html'">Menu</button>
+        <button onclick="location.href='revue_presse.html'">Revue de presse</button>
+        <button onclick="location.href='revue_scientifique.html'">Revue scientifique</button>
+        <button onclick="location.href='cartographie.html'">Cartographie des acteurs</button>
+        <button onclick="location.href='frise.html'">Évolution du Droit Animalier</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <div class="info-card reveal">
+            <h3>Cartographie des acteurs</h3>
+            <div class="img-container">
+                <img src="WhatsApp Image 2026-01-18 at 18.26.54.jpeg" alt="Cartographie des acteurs">
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="container">
+    <div class="info-card reveal">
+        <h3>Analyse des réponses (Graphique Interactif)</h3>
+        <p>Cliquez sur un point pour voir le détail des réponses du participant.</p>
+        <div class="chart-container">
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" style="margin:0">Participant</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        "1. Pensez vous que les animaux dans les zoo/aquariums sont bien traités ? (1=Oui, 5=Non)",
+        "2. Pouvez vous détailler votre opinion ?",
+        "3. Pensez vous qu’il faudrait remettre en liberté les animaux des zoo/aquariums ?  (1=Oui, 5=Non)",
+        "4. Pourquoi ?",
+        "5. Que pensez-vous du bien-être animalier ?",
+        "6. Les billets d’entrée ne servent-ils qu’à s’occuper des animaux (entretien + coût du personnel) ou enrichissent-ils aussi les propriétaires ?",
+        "7. Les zoo/aquariums sont ils juste une source de divertissement ou contribuent-ils aussi à notre éducation ?",
+        "8. Les nouvelles technologies ne pourraient-elles pas remplacer les zoo en ce qui concerne l’éducation ?",
+        "9. Que pensez vous de l’euthanasie des animaux reproduis artificiellement et qui sont donc en excès ?",
+        "10. Les zoo servent-ils vraiment à protéger les espèces menacées ? (1=Oui, 5=Non)",
+        "11. Expliquez votre point de vue",
+        "12. Est-il éthiquement acceptable d’enfermer des animaux qui ont besoin d’un environnement spécifique dans des enclos même spacieux ? (1=Oui, 5=Non)",
+        "13. Expliquez votre point de vue",
+        "14. En enfermant des animaux, ne mettons nous pas en cause la sensibilité animal ? (1=Oui, 5=Non)",
+        "15. Pourquoi selon vous les parcs animaliers existent ils encore ?"
+    ];
+
+    const coordinates = {
+        2: {x: 3, y: -9}, 3: {x: 0, y: -2.5}, 4: {x: 0, y: -9}, 5: {x: 9, y: -5}, 6: {x: 9.2, y: -5},
+        7: {x: 5, y: 0.1}, 8: {x: 9, y: -9}, 9: {x: 9.2, y: -9}, 10: {x: 3, y: -2.5}, 11: {x: -5.8, y: -8},
+        12: {x: -9, y: -5}, 13: {x: -9, y: 5}, 14: {x: 9, y: -2.5}, 15: {x: 9.5, y: 0.2}, 16: {x: -9, y: -2.5},
+        17: {x: 5, y: 5}, 18: {x: -7, y: -1}, 19: {x: -6.8, y: 5}, 20: {x: -0.5, y: 3}, 21: {x: -4, y: 2},
+        22: {x: 3.2, y: -9}, 23: {x: -6, y: -5}, 24: {x: -3.8, y: 2}, 25: {x: -6.6, y: 5}, 26: {x: -3, y: 6},
+        27: {x: -6, y: -8}, 28: {x: -4, y: 8}, 29: {x: -7, y: 5}, 30: {x: 0, y: 0}, 31: {x: -2, y: -4},
+        32: {x: -1, y: 9.5}, 33: {x: 5, y: 6.5}, 34: {x: -3, y: -8}, 35: {x: -3, y: -5}
+    };
+
+    const data = {
+        2: ["5", "Trop de scandales horribles", "5", "La plupart ne peuvent être réintroduit", "C'est important", "jsp", "Ils permettent une éducation plus ludique", "possible", "j'étais même pas au courant", "2", "oui mais pas que", "5", "", "2", "divertissement, tradition..."],
+        3: ["3", "N/A", "3", "N/A", "C’est important", "Enrichissent aussi les propriétaires", "Ils permettent une éducation plus ludique", "Oui il peuvent les remplacer", "Contre", "4", "N/A", "2", "N/A", "3", "Peu être pour les revenus qu’ils génèrent"],
+        4: ["5", "les espaces sont trop petits, ils n’ont aucune stimulation, et ils sont parfois maltraités, ce n’est pas du tout adapté pour des animaux sauvages ", "1", "le faire apres 50 ans de captivités c’est peu être pas une bonne idée (ils ont perdu l’habitude de chasser) mais ils pourraient être réintroduits dans des sanctuaires progressivement ", "c’est important ", "Les deux", "Ils permettent une éducation plus ludique","si", "il vaut mieux arrêter de les reproduire ?", "4", "il n’y a pas besoin de les mettres dans un zoo pour les protéger : il existe des réserves naturelles pour ça ", "5", "ce sont des etres vivants. on ferait ça avec des humains ça s’appellerait un kidnapping et une séquestration ", "1", "parce que il y a de la demande du côté des consommateurs vu que les gens en ont rien à foutre du bien être animal"],
+        5: ["4", "Dans certains parcs, les espaces sont super grands donc ca doit etre bcp mieux ; par contre dans les zoo 'classiques' te les aquariums ya jamais la place nécessaire ", "3", "la plupart du temps, je pense qu'ils seraient en trop mauvaise santé pour être relachés direct ; et si certains sont en voie d extinction les relachés pourrait nuire à la survie de l espèce (braconnage)", "Pas d'opinion spé", "Enrichissent", "Ce n'est qu'une source de divertissement", "Oui", "je savais pas mais ca a l air scandaleux", "3", "ya assez de cas pour dire que oui, mais ca reste une trop fable minorité", "2", "si l environnement est respecté, c good", "3", "Difficultés de transition"],
+        6: ["4", "N/A", "3","N/A", "Cela est important", "Si c'est privé oui", "Ce n'est qu'une source de divertissement", "Si", "Gaspillage", "3", "N/A", "3", "N/A", "2", "Bonne question"],
+        7: ["3", "N/A", "3", "N/A", "Il est important de ne pas causer de la souffrance inutile.", "Ils enrichissent, je pense, les parcs sont en majorité des entreprises donc ont un but lucratif, il me semble.", "Ils permettent une éducation plus ludique", "Il y a une différence entre voir un animal de près et sur un écran. Je ne suis pas pour le solutionnisme technique donc je n’envisage pas la réalité virtuelle comme un outil valable de remplacement.", "Présenté comme cela, il s’agit d’une horreur. Il suffit d’arrêter de reproduire artificiellement des animaux en excès.", "3", "N/A", "4", "N/A", "2", "Ils rapportent de l’argent."],
+        8: ["4", "N/A", "2","N/A", "Il est remis en cause dans le zoo", "Ils enrichissent aussi les propriétaires ", "Ce n'est qu'une source de divertissement", "Oui totalement, la réalité virtuelle par exemple ", "C'est pas bien", "2", "Ca depend de l’espece et du cadre mais les réserves naturelle sont à privilégier ", "4", "N/A", "1", "Pour le divertissement et l’argent"],
+        9: ["4", "pas leur habitat naturel ", "2", "oui car pas habitat naturel mais tout de même est ce que il seront capable de survivre ?", "important à mes yeux, mais souvent le specisme banalise certain comportement envers certains groupe animaux ( pas la même sensibilité des humain pour un cochon ou pour un chien/ koala)", "enrichissent les propriétaires ", "Ce n'est qu'une source de divertissement", "Si", "WTF", "4", "autant faire des réserves naturelles ", "5", "N/A", "2", "pour le divertissement, car ça rapporte de l’argent "],
+        10: ["3", "Je pense qu’on ne fait pas forcément de mal aux animaux mais je ne suis pas sûre que les animaux soit fait pour rester dans des cages toutes la journée, malgré la taille de la cage.", "3", "Je pense que d’un côté il faudrait qu’on relâche  les animaux mais de l’autre ce serait un danger parce que cela bousculerait toute une biodiversité en relâchant des animaux qui ne sont pas habitués à être en liberté. Je pense donc qu’il ne faudrait pas relâcher les animaux mais juste éviter de continuer d’entretenir ce commerce.", "Je pense que le bien être animalier est relatif et propre à chacun mais qu’il ne faut pas forcément s’arrêter à ce que l’on pense mais comprendre également la bête qui est à côté. Parce que dire qu’on fait du bien à une bête parce qu’on la nourrie alors qu’elle est en cage ( même grande) ce n’est pas forcément la réalité. D’un autre côté, l’animal nous fait très vite comprendre si il est malheureux. Encore une fois, il faut écouter et comprendre la bête.", "Je ne sais pas ", "Ce n'est qu'une source de divertissement", "Je trouverai ça dommage de remplacer la nature par des technologies. Il suffirait juste de se promener en pleine nature et de comprendre la biodiversité qui nous entoure.", "Je pense que c’est une hérésie de tuez des animaux que l’on a choisi de créer.", "4", "D’un côté oui, mais de l’autre si les espèces sont menacées, c’est soit de notre faute et de notre ressort, soit la nature qui le veut ainsi. ", "4", "N/A", "1", "Car cela amuse la galerie, que l’ont dit que c’est pour protéger les animaux et que cela enrichit les propriétaires "],
+        11: ["5", "Beaucoup d'espèces sont juste pas faites pour la captivité et vivre dans des petits espaces", "3", "Maintenant qu’ils sont en captivité... les remettre dehors ça veut dire les condamner à mourir", "Oui il faut sauver les pauvres animaux ils souffrent c’est trop tristes omg. En plus ils sont trop mignons c’est vraiment pas bien", "Dès lors qu’un zoo est privé le but à la fin c’est faire du profit. Autrement pourquoi entretenir un zoo? La question est différente pour les centres publics", "Ils permettent une éducation plus ludique", "La création de vidéo IA de girafe ça remplace pas le fait d’en voir en vrai. Les documentaires  animaliers existent ", "C’est du meurte juste", "2", "Les quelques espèces les plus menacées et connues sûrement (panda etc...) mais la plupart des espèces menacées personne les connait, et ont surtout besoin de pas se faire prendre leur habitat par l'humain ", "4", "N/A", "1", "Les proprios en profitent, les gens aiment bien aller voir les animaux. On fait peu de cas de la vie animale alors j’imagine que garder des mammifères en captivité ça ne choque pas beaucoup plus que de les abattre et les manger"],
+        12: ["4", "N/A", "4", "Ce sont souvent des animaux qui n'ont jamais vécu à l'état sauvage, cela pourrait leur nuire. Les réintroduire dans une réserve pour permettre leur développement doit se faire de manière réfléchie. ", "Cela est important, il est nécessaire de bien traiter les animaux. Ils n'ont pas à souffrir sans raison. ", "Cela doit dépendre des différents sites, mais les zoo ont pour but de maintenir leur fonctionnement et d'être rentable pour pouvoir investir dans l'optique de faire face à la diminution d'animaux dans les parcs par exemple ", "Ils permettent une éducation plus ludique", "La pratique et voir réellement les choses ne peut pas être remplacé entièrement par la théorie ou des simulations.", "Pas d'avis", "3", "Ils ont pour but d'être rentable mais dans une certaine mesure il protège les animaux. ", "4", "N/A", "2", "Ils existent encore car l'homme aime les loisirs mais également car ils ont l'excuse d'être aussi éducatif.  Et dans les faits ils ne causent pas de tort aux animaux s'ils sont bien traités. "],
+        13: ["2", "Les personnes qui s'en occupent sont souvent passionnées", "4", "S'ils n'ont jamais été libre avant ça va juste les mettre en danger", "Dépend des zoo mais je pense qu'il est bien dans la grande majorité des cas", "Ça dépend si le zoo est privé ou public", "Ils permettent une éducation plus ludique", "Je préfère pas, c'est plus marquant de les voir en vrai", "Je ne savais pas mais ça à l'air bien débile ", "3", "N/A", "4", "N/A", "3", "Pour pouvoir continuer à observer de près et de manière accessible des animaux fascinant"],
+        14: ["3", "ça dépend grandement des zoo je pense", "2", "r","C'est important", "les deux sauf quand le zoo est à perte", "Ce n'est qu'une source de divertissement", "Je ne pense pas que le zoo éduque", "C'est une nécessité dû à la bêtise humaine ", "3", "N/A", "2", "N/A", "2", "Parce qu'ils rapportent de l'argent"],
+        15: ["3", "c'est pas leur habitat naturel !!!", "1", "parce que c'est cruel de les laisser en captivité pour le seul plaisir de l'homme ", "IMPORTANT", "deuxième option", "Ce n'est qu'une source de divertissement", "OUI", "cruel mais j'ai pas plus d'avis sur la question ", "3", "N/A", "3", "je m'y connais pas assez ", "1", "l'humain est debile et pense qu'à la thune"],
+        16: ["3", "Aucune idée, je ne suis pas un poisson", "4", "Espèces en voie de disparition uniquement d'où le 4/5", "Important", "Enrichissant", "Ils permettent une éducation plus ludique", "Non, on est plus touché de voir un vrai animal + déplacement + odeur", "Pas d'opinion", "2", "Je ne pense pas ", "5", "Tout est dans votre formulation", "3", "Argent, Argent et Argent"],
+        17: ["3", "Ça dépend beaucoup de l'endroit mais selon l'endroit les animaux sont nourris, protégés et soigné même si on les prive d'une grande part de leur liberté.", "5", "Il ne sont pas habitués à la vie sauvage, on ne ferait que les condamner à mort en faisant ça.", "C'est important d'essayer de traiter au mieux les animaux si possible même si l'humain reste prioritaire.", "Il faut bien qu'ils enrichent les propriétaires, sinon ces établissements n'existeraient pas (sauf pour les refuges dans quel cas je ne sais pas).", "Ce n'est qu'une source de divertissement", "Sûrement avec la réalité virtuelle ou augmenté, on pourrait observer les animaux dans leur habitat naturel, ce serait peut-être même plus instructif.", "Je ne suis pas renseigné sur le sujet donc je n'ai pas vraiment d'avis.", "2", "Ils permettent de conserver certains spécimens qui seraient plus en danger en liberté (braconnage, prédateur...). ", "4", "N/A", "2", "Parce que ça marche et que ce n'est pas forcément inutile pour la préservation de certaines espèces. De plus les spécimens nés en captivité ne sont pas vraiment adaptés à la vie sauvage et il est donc préférable de les laisser vivre en captivité."],
+        18: ["3", "N/A", "4","","...", "Toute entreprise a une logique capitaliste donc les deux et je vois mal de subventionner ce genre de lieux. ", "Ils permettent une éducation plus ludique","Neutre", "Rien", "5", "N/A", "3", "N/A", "2", "Parce qu’ils participent à la supériorité de l’homme sur l’animal et de nourrir cet idéal. C’est également plus facile d’aller voir un panda roux dans un zoo et sentir une connexion à la nature malgré l’absurdité de la situation que de réellement agir pour lutter contre l’extinction de la biodiversité. "],
+        19: ["2", "Je pense que la plupart des soigneurs et personnels chargés de prendre soin des animaux font ce métier parce que cela leur fait plaisir et donc ont à cœur de protéger les animaux et de bien les traiter. Cependant, j'imagine que tout dépend aussi des moyens à leur disposition et du soutien ou non des personnes qui dirigent administrativement ces parcs.", "2", "Beaucoup d'entre eux sont maintenus en captivité pour le divertissement humain, je trouve ça plutôt triste. Mais certains sont également placés dans des parcs pour les protéger de l'extinction ou des dangers extérieurs, ce qui est plutôt positif. S'ils sont bien traités et qu'ils sont plus heureux que laissés à eux-mêmes dans la nature, je pense qu'il peut être plus judicieux de les garder dans des parcs/zoos.", "Je pense que c'est important, et qu'il n'y a pas de raison de maltraiter les animaux.", "Les deux je pense, sinon les propriétaires ne pourraient pas faire tourner leur activité et y gagner.", "Ils permettent une éducation plus ludique", "Peut-être, mais je trouve ça moins vivant, ce n'est pas la même chose que de voir un vrai animal grand devant soi, c'est dommage.", "Je ne savais pas que ça existait. C'est horrible.", "2", "Je dirais plutôt oui, mais en même temps ce sont des établissements qui cherchent à attirer des visiteurs.", "4", "Plutôt non, mais cela dépend : cet environnement spécifique peut-il être reproduit fidèlement dans l'enclos ? Et quel est le but de l'enclos, protection ou exhibition ?", "2", "D'une part, je pense en partie pour l'aspect protection des espèces. D'autre part, j'imagine aussi parce que c'est un type d'établissement qui rapporte des revenus. Enfin, peut-être aussi pour le côté dépaysant qu'ils proposent : les gens se sentent peut-être comme des aventuriers en pays étrangers lorsqu'ils peuvent approcher et voir de près de grands animaux sauvages comme des fauves, des éléphants etc."],
+        20: ["2", "Ça dépend des endroits. ", "5", "Les animaux en zoo et aquarium sont trop habitués à la vie en captivité.", "C'est mieux de le respecter.", "I don't know. You tell me. Le but d'un zoo c'est d'être lucratif. C'est une attraction.", "Ils permettent une éducation plus ludique", "Si si on pourrait tout apprendre dans des livres aussi.", "Dis comme ça on a l'impression de créer un problème dans le but de le résoudre.", "2", "Certains accueillent les espèces menacées. Bien que destinés à accueillir du public, les zoos et aquariums protègent quand même certains animaux. ", "5", "N/A", "1", "Ils sont lucratifs. Cela donne une utilité aux structures qui s'occupent d'animaux d'espèces menacées. Il s'agit d'une forme de divertissement qui est entrée dans la tradition. "],
+        21: ["3", "En soi on prend soin d’eux dans les parcs animaliers mais on les prive aussi de la liberté qui est la leur dans la nature et ça change sûrement des choses pour eux au niveau physiologique. ", "2", "Ils ne sont pas habitués à la nature et ont sûrement des systèmes biologiques plus (voire trop) faibles. ", "C’est important…", "Ils enrichissent sûrement les propriétaires (on est dans une société capitaliste quand même) ", "Ce n'est qu'une source de divertissement", "Si sûrement.","Je n’ai pas compris cette question (sûrement pas méconnaissance des enjeux). ", "Idem à celui plus haut. ", "5", "N/A", "2", "C’est à la fois une solution pour prendre soin d’eux et un endroit où on emmène les enfants pour les émerveiller avec des éléments qui appartiennent réellement à la nature"],
+        22: ["4", "Les animaux sont privés de liberté et ne peuvent se développer comme ils l’auraient fait naturellement. Dans la plupart des cas ils sont utilisés dans un but lucratif. Ils sont néanmoins parfois bien traités mais il faut faire attention aux pubs mensongères qui prônent un respect de l’animal alors qu’il n’en est rien en réalité.", "3", "Oui dans l’idéal mais dans les faits cela est plus compliqué. Si les animaux se sont habitués à leur cadre de vie, enfermés et encadrés par l’humain il est parfois difficile et dangereux de les remettre radicalement dans la nature. ", "C’est une considération essentielle ", "ils enrichissent clairement.", "Ce n'est qu'une source de divertissement", "Potentiellement", "Ce n’est sans doute pas la solution. Cela dépend des cas mais ne doit pas être la manière par défaut. Il faut revenir à la source du problème.", "4", "Je me répète mais cela dépend, souvent les animaux sont dénaturalisés et l’espèce perd de son caractère. Néanmoins dans certains cas cela a grandement aidé et là est le cas ou l’humain intervient de manière bienveillante et bénéfique ", "4", "Ça me paraît évident ", "2", "Bons arguments en façade, bénéfices, et un brin de bonnes intentions "],
+        23: ["2", "Le comportement de l'animal doit être impacté par la captivité. Dans les pays où il n'y a pas de régulation, il y a climat de terreur instauré par tout ce qui est dresseur.", "3", "Sauf espèces en voie de disparition, le temps d'être sur qu'elles ne disparaissent pas. Ou sinon utiliser une méthode de réintroduction génétique type rewilding ?", "Il est bel et bien a prendre en compte.", "Les deux ! Il faut payer le zoo mais aussi que ceux qui le gèrent aient un salaire ", "Ils permettent une éducation plus ludique", "Bien sûr, mais ce serait beaucoup plus chiant. Après l'inconvénient du zoo edt qu'on ne voit pas toujours les espèces dans leur parcelle... ","S'ils sont malades... Ok. Sinon c'est inhumain.", "5", "Pas vraiment dans un zoo mais un endroit où les chercheurs viennent déposer leurs animaux... donc je pense qu'en fait c'est pas un zoo", "3", "Si l'enclos est suffisamment grand pour l'espèce ok. C'est généralement pas le cas donc non", "4", "Les mentalités ne sont pas encore toutes changées"],
+        24: ["3", "C’est très variable : certains zoos/aquariums ont de bons moyens, des vétérinaires, des programmes d’enrichissement et des enclos adaptés, tandis que d’autres manquent de place ou privilégient l’attractivité. Pour moi, la qualité dépend des contrôles, des ressources et du choix des espèces (certaines supportent mal la captivité). Il faudrait des critères plus exigeants et des sanctions en cas de conditions insuffisantes.", "3", "Une remise en liberté “générale” n’est pas réaliste : beaucoup d’animaux n’ont pas les compétences pour survivre, et il y a des risques sanitaires et écologiques. En revanche, pour certains individus/espèces, des programmes de réhabilitation et de réintroduction peuvent être possibles. Sinon, des sanctuaires et de meilleures conditions de vie sont préférables.", "Le bien-être animal doit être la priorité : il ne s’agit pas seulement de santé physique, mais aussi d’enrichissement, de stimulation mentale, d’espace adapté, de respect des besoins sociaux et du comportement naturel. Selon les espèces, certains environnements sont très difficiles à reproduire ; il faut donc des normes strictes, des contrôles et une transparence sur les conditions de détention.", "Les billets servent clairement à financer l’entretien, les soins vétérinaires, les installations et le personnel. Mais dans les structures privées, il peut aussi y avoir une logique de profit. Pour éviter les abus, il faudrait plus de transparence (budget, réinvestissement, audits) et une part dédiée à la conservation et au bien-être.", "Ils permettent une éducation plus ludique", "Les nouvelles technologies (documentaires, VR, contenus interactifs) peuvent compléter et parfois remplacer une partie de l’éducation, surtout pour les espèces difficiles à maintenir en captivité. Cependant, l’expérience directe peut susciter une prise de conscience forte. L’idéal serait de limiter la captivité quand elle est problématique et d’utiliser la technologie comme alternative/complément.", "Je trouve cela très problématique éthiquement. La reproduction devrait être mieux planifiée (contraception, échanges entre parcs, limitation des naissances) pour éviter les “surplus”. L’euthanasie ne devrait être envisagée qu’en dernier recours et surtout pour des raisons médicales, avec une transparence totale.", "3", "Les zoos peuvent aider via des programmes de reproduction, de recherche, de sensibilisation et parfois de réintroduction. Mais l’impact reste limité si on ne protège pas les habitats naturels et si l’on ne lutte pas contre le braconnage. Donc oui, ils peuvent contribuer, mais ce n’est pas la solution principale.", "4", "Même avec de grands enclos, certains animaux ont besoin d’un territoire immense, d’un climat ou d’un milieu très spécifique. La captivité peut provoquer du stress et des comportements anormaux. Je peux comprendre la captivité pour le sauvetage, la conservation encadrée ou des animaux non relâchables, mais pas comme simple divertissement.", "2", "Ils existent encore parce qu’ils répondent à une demande de divertissement et de sortie familiale, mais aussi parce qu’ils se présentent comme des lieux d’éducation et parfois de conservation. Il y a également des enjeux économiques (emplois, tourisme). Les avis restent mitigés car tout dépend du modèle : parc purement commercial vs structure réellement engagée dans le bien-être et la conservation."],
+        25: ["2", "Je pense que les gens qui s'en occupent sont attachés à ces animaux et font donc attention à eux, bien que cela ne signifie pas que les animaux soient heureux", "4", "Je doute que la plupart des animaux déjà captifs soient capables de revivre dans leur habitat naturel", "C'est important", "Les deux", "Ils permettent une éducation plus ludique", "Oui", "Euh, je ne connais pas assez le sujet pour y répondre d'un point de vue un minimum informé ", "4", "Il n'y a pas que des espèces menacées dans les zoos et je pense que des réserves sont plus appropriées pour les protéger", "5", "Les enclos sont dans la grande majorité du temps une reproduction artificielle de leur environnement, et les enclos sont rarement assez spacieux", "2", "Les gens y viennent s'y divertir et cela rapporte de l'argent"],
+        26: ["2", "N/A", "2","N/A", "Le bien-être animal est très important et doit être une priorité. Les animaux doivent vivre dans des conditions respectueuses de leurs besoins physiques et comportementaux.", "Les billets d’entrée servent principalement à l’entretien des animaux et au fonctionnement des parcs, mais il est possible qu’une partie contribue aussi aux bénéfices des propriétaires.", "Ils permettent une éducation plus ludique", "Les nouvelles technologies peuvent compléter l’éducation, mais elles ne peuvent pas totalement remplacer les zoos, notamment pour l’expérience directe et la sensibilisation au vivant.", "C’est une question très complexe et délicate. L’euthanasie devrait être évitée autant que possible et ne constituer qu’un dernier recours, après avoir envisagé toutes les autres solutions.", "4", "N/A", "3", "N/A", "3", "Les parcs animaliers existent encore pour des raisons multiples :le divertissement, l’éducation du public, la conservation de certaines espèces et la sensibilisation aux enjeux environnementaux."],
+        27: ["4", "Je pense que pour beaucoup de zoo le bien être animal n'est pas considéré comme il le devrait", "3", "Même si certains animaux souffrent de manquements à leurs besoins, je pense que les relâcher serait mauvais pour plusieurs raisons (inadaptés à la vie sauvage, perturbation culturelle).", "Je pense que les parcs animaliers auxquels on est exposés, les parcs animaliers urbains sont les plus susceptibles de ne pas respecter le bien être animal. Pour la raison du manque de place ou que la raison de leur existence est de montrer aux gens les animaux, leur but premier concerne l'Homme et n'est pas le bien être animal qui passe second. D'autres parcs animaliers 'intermédiaires' (entre le parc animalier urbain et la réserve) ont des objectifs plus nuancés et sont moins enclins à commettre des manquements.", "Une partie des recettes du parc animalier est versé pour le bien être des animaux. Le reste aux employés et au développement de nouvelles activités dans le parc. Je ne pense pas que les propriétaires perçoivent une somme très importante.", "Ils permettent une éducation plus ludique", "Je pense que rien ne peut remplacer l'expérience du réel. Mais je pense que les zoo nous privent de la fascination de la découverte en rendant accessible et banal quelque chose qui pourrait ne pas l'être.", "Je pense que aux animaux ça reflète d'une pauvreté de traitement, de gestion et donc d'intérêt porté aux animaux.", "5", "Le but d'un zoo est d'exposer les animaux. La sauvegarde des espèces se fait dans les réserves animales où l'habitat de l'animal est reproduis ou par suivi scientifique.", "4", "Je pense que d'enfermer les animaux pour des raisons autres que leur protection (même si elles sont secondes car elles influent d'une manière ou d'une autre sur les conditions de vie) est éthiquement condamnable. ", "2", "Il faut en effet des problèmes pour qu'on parle de leur cause."],
+        28: ["1", "Soigneurs et vétérinaires en permanence, soins de qualité, nourriture nécessaire et suffisante", "5", "Pas habitués à vivre en liberté donc décès dès la remise en liberté", "Essentiel dans les parcs zoologiques et en dehors", "Ils servent aux deux", "Ils permettent une éducation plus ludique", "Non", "Ce n'est pas normal mais les places en zoo sont rares et les associations de 'protection animale' les en empêchent", "5", "N/A", "4", "N/A", "5", "Protection des espèces, études des animaux sauvages, éducation des populations, divertissement"],
+        29: ["2", "N/A", "4", "N/A","Il faut s'assurer que les animaux ne sont pas maltraités mais certains aiment faire des spectacles ", "Le prix des billets ne va pas assez vers le bien-être des animaux ou les personnels", "Ils permettent une éducation plus ludique", "Un écran ne remplace pas le fait de voir un animal en vrai", "Euthanasier des animaux qui sont en bonne santé est inadmissible ", "2", "N/A", "4", "N/A", "4", "Les parcs permettent de faire découvrir des animaux non domestiques et certains permettent de protéger des espèces en danger "],
+        30: ["3", "j'en sais rien", "3", "JSP", "j'en ai pas grand chose à faire", "ils enrichissent les propriétaires", "Ils permettent une éducation plus ludique", "Si", "Pourquoi pas", "5", "les zoos sont surtout à but économique", "3", "N/A", "2", "pour l'argent, et parce que c'est socialement considéré comme normal."],
+        31: ["4", "Vu le manque d'espace on peut pas considérer qu'ils sont bien traités ", "3", "Je ne suis pas certain qu'ils survivent ", "Ce n'est pas ma préoccupation majeure ", "Enrichissent les propriétaires ", "Ce n'est qu'une source de divertissement", "La virtualisation serait souhaitable ", "Pas d'accord du tout ", "3", "Certaines espèces sont tellement proches de l'extinction que c'est un mal nécessaire ", "5", "N/A", "3", "Par antériorité "],
+        32: ["1", "Tout est très contrôlé, loin du pathos anthropomorphique. Dans des conditions normales, hors dérives rarissimes, les animaux sont idéalement traités...", "5", "Cette question est assez absurde. Elle sous-entend que les animaux souffrent de privation de liberté...", "Le bien être animal est une ambition primordiale...", "La plupart du temps les billets d’entrée ne couvrent pas les coûts...", "Ils permettent une éducation plus ludique", "Le contact avec le vivant est absolument indispensable...", "C’est un débat d’ordre vétérinaire...", "1", "1/ ce sont des conservatoires pour les espèces menacées...", "1", "Les enclos respectent les besoins des animaux...", "5", "Ils sont indispensables pour maintenir un lien physique..."],
+        33: ["1", "", "3", "J'en sais rien ","Il faut tenir compte que les animaux soient bien traités", "Ça enrichi pas", "Ce n'est qu'une source de divertissement", "Non", "Faut pas", "1", "N/A", "3", "N/A", "5", "Pour que les enfants aillent voir les animaux "],
+        34: ["4", "Dans certains zoo ils sont bien traités mais on voit aussi de nombreux cas de violences animalière", "4", "Ce serait bien de pouvoir les remettre en liberté mais ils ont été conditionnés à une vie enfermé où la nourriture leur est donné donc ils ne pourraient pas survivre dans la nature il ne faut donc pas les relâcher", "Il est très important même si il n'est pas toujours respecté", "Ils enrichissent aussi les propriétaires surtout quand c'est des zoo privés", "Ils permettent une éducation plus ludique", "Ils pourraient servir pour découvrir les animaux mais rien ne vaut une expérience plus réelle donc je pense que ce serait bien de les avoir au moins en amont", "C'est horrible si ils les ont reproduis ils devraient les gardé (sauf en cas de maladie)", "4", "Certaines espèces ont été sauvées mais c'est les zoos qui les ont mis en danger dans un premier temps", "5", "Privé des animaux de liberté c'est n'importe quoi ", "2", "Parce qu'ils génèrent des revenus et en plus on a internalisé l'idée d'avoir accès à des zoos"],
+        35: ["4", "N/A", "5", "Étant habitués à ces conditions les remettrent en liberté conduirai à une mort précoce ", "Quelque chose de primordial surtout dans ces milieux ", "Enrichir", "Ils permettent une éducation plus ludique", "Pas totalement", "Immoral", "2", "Ils permettent d'éviter l'extinction de l'espèce mais ne la sauvé pas pour autant", "5", "N/A", "3", "Protection des espèces menacées "]
+    };
+
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                data: Object.keys(coordinates).map(id => ({ 
+                    x: coordinates[id].x, 
+                    y: coordinates[id].y, 
+                    id: id 
+                })),
+                backgroundColor: (c) => {
+                    const y = c.raw ? c.raw.y : 0;
+                    return y > 0 ? '#e74c3c' : '#3498db';
+                },
+                pointRadius: 10,
+                pointHoverRadius: 14,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { 
+                    min: -11, max: 11,
+                    title: { display: true, text: 'Anthropocentrisme (priorité aux besoins humains)', font: {size: 14, weight: 'bold'}},
+                    grid: { 
+                        display: true,
+                        color: c => c.tick.value === 0 ? '#000' : 'rgba(0,0,0,0.1)', 
+                        lineWidth: c => c.tick.value === 0 ? 2 : 1
+                    },
+                    ticks: { display: false }
+                },
+                y: { 
+                    min: -11, max: 11,
+                    title: { display: true, text: 'Education', font: {size: 14, weight: 'bold'}},
+                    grid: { 
+                        display: true,
+                        color: c => c.tick.value === 0 ? '#000' : 'rgba(0,0,0,0.1)', 
+                        lineWidth: c => c.tick.value === 0 ? 2 : 1
+                    },
+                    ticks: { display: false }
+                },
+
+                // AXES SECONDAIRES (Haut et Droite)
+                xTop: {
+                    position: 'top',
+                    min: -11, max: 11,
+                    grid: { display: false },
+                    ticks: { display: false },
+                    title: { display: true, text: 'Zoocentré (bien être animal prime)', font: {size: 12, weight: 'bold', style: 'italic'}, color: '#7f8c8d'}
+                },
+                yRight: {
+                    position: 'right',
+                    min: -11, max: 11,
+                    grid: { display: false },
+                    ticks: { display: false },
+                    title: { display: true, text: 'Source de divertissement', font: {size: 12, weight: 'bold', style: 'italic'}, color: '#7f8c8d'}
+                }
+            },
+
+            
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `Participant n°${ctx.raw.id}`
+                    }
+                }
+            },
+            onClick: (e, elements, chart) => {
+                if (elements.length > 0) {
+                    const id = chart.data.datasets[0].data[elements[0].index].id;
+                    openModal(id);
+                }
+            }
+        }
+    });
+
+    function openModal(id) {
+        document.getElementById('modalTitle').innerText = `Détails Participant n°${id}`;
+        const body = document.getElementById('modalBody');
+        body.innerHTML = "";
+        
+        const responses = data[id];
+        if(!responses) {
+            body.innerHTML = "<p>Pas de données pour ce participant.</p>";
+            document.getElementById('modal').style.display = "block";
+            return;
+        }
+
+        questions.forEach((q, i) => {
+            let val = responses[i] || "Non renseigné";
+            let noteHtml = "";
+            
+            // Si la réponse est un chiffre unique entre 1 et 5
+            if (["1","2","3","4","5"].includes(val.toString().trim())) {
+                const n = parseInt(val);
+                const colorClass = n <= 2 ? 'note-green' : (n === 3 ? 'note-yellow' : 'note-red');
+                noteHtml = `<span class="note-badge ${colorClass}">${n}/5</span>`;
+                val = ""; // On vide la réponse texte car c'est une note
+            }
+            body.innerHTML += `<div class="qa-card"><span class="q-text">${q}${noteHtml}</span><div class="a-text">${val}</div></div>`;
+        });
+        document.getElementById('modal').style.display = "block";
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = "none"; }
+    
+    // Fermer si on clique en dehors de la boîte
+    window.onclick = (e) => { 
+        if (e.target == document.getElementById('modal')) closeModal(); 
+    }
+</script>
+
+<div class="container">
+    <div class="info-card reveal">
+        <h3>Témoignages étudiants internationaux</h3>
+        
+        <div class="testimonial-item">
+            <h4 style="color: #27ae60; margin-bottom: 10px;">Kanoko Sakurai (Japon)</h4>
+            <p style="font-style: italic; border-left: 3px solid #2ecc71; padding-left: 15px;">
+                "En tant qu’étudiante japonaise, je pense que les parcs animaliers ont longtemps été vus au Japon comme des lieux d’éducation et de découverte. 
+                Cependant, aujourd’hui, la question du bien-être animal est de plus en plus importante et doit être prise au sérieux. <br><br>
+                À mon avis, les zoos peuvent encore avoir un rôle éducatif, mais seulement si les conditions de vie des animaux sont adaptées à leurs besoins. 
+                Il est également important de développer d’autres moyens, comme les nouvelles technologies, pour limiter la captivité des animaux."
+            </p>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+        <div class="testimonial-item">
+            <h4 style="color: #27ae60; margin-bottom: 10px;">Zhongman Du (Chine)</h4>
+            <p style="font-style: italic; border-left: 3px solid #2ecc71; padding-left: 15px;">
+                "En tant qu’étudiant chinois, je pense que, chez nous, les zoos et aquariums ont longtemps été vus comme des lieux pour sortir en famille et apprendre des choses sur les animaux. Mais aujourd’hui, on fait plus attention au bien-être animal, et beaucoup de gens se demandent si la captivité est vraiment acceptable. <br><br>
+                Pour moi, un zoo n’a du sens que si les animaux sont bien traités et vivent dans de bonnes conditions, avec des règles strictes et de la transparence. Sinon, ça devient surtout du divertissement. En même temps, on peut aussi mieux éduquer le public autrement, par exemple avec des documentaires, des visites virtuelles et en soutenant la protection des animaux dans la nature.<br><br>
+                Je pense aussi qu’il faudrait mieux expliquer au public d’où viennent les animaux, pourquoi certains ne peuvent pas être relâchés, et quels sont les vrais objectifs de conservation. Enfin, des contrôles plus réguliers et des informations ouvertes aideraient à construire la confiance et à réduire les abus."
+            </p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="left">
+        <p>Léia Bischoff</p>
+        <p>Mathys Cornuaud</p>
+        <p>Cédrick Li</p>
+        <p>Kanoko Sakurai</p>
+        <p>Édouard Levesque</p>
+        <p>Zhongman Du</p>
+    </div>
+    <div class="right">
+        <p>Centrale Lille</p>
+        <p>Complexité</p>
+        <p>Mise en page et JS fait en partie avec l'aide de l'IA</p>
+    </div>
+</footer>
+
+<script>
+    // Gestion du scroll
+    window.onscroll = function() {
+        const header = document.getElementById("header");
+        if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
+        reveal();
+    };
+
+    function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    
+    for (var i = 0; i < reveals.length; i++) {
+        var windowHeight = window.innerHeight;
+        var elementTop = reveals[i].getBoundingClientRect().top;
+        var elementBottom = reveals[i].getBoundingClientRect().bottom;
+        
+        // Seuil d'apparition/disparition (en pixels)
+        var elementVisible = 100; 
+
+        // CONDITION : 
+        // 1. Le haut de l'élément est au-dessus du bas de l'écran
+        // 2. Le bas de l'élément est au-dessous du haut de l'écran
+        if (elementTop < windowHeight - elementVisible && elementBottom > elementVisible) {
+            reveals[i].classList.add("active");
+        } else {
+            // Retire la classe si l'élément sort de la zone visible
+            reveals[i].classList.remove("active");
+        }
+    }
+}
+    
+    // Au chargement initial
+    reveal();
+</script>
+</body>
+
+</html>

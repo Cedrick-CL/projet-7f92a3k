@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le bien-être animal</title>
+    <style>
+        /* CONFIGURATION GÉNÉRALE */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #27ae60;
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 30px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header.shrink { padding: 10px 15px; }
+        header h1 { margin: 0 0 10px 0; font-size: 1.8rem; transition: font-size 0.3s ease; }
+        header.shrink h1 { font-size: 1.3rem; }
+
+        nav { margin-top: 10px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+        nav button { padding: 8px 15px; border: none; border-radius: 5px; background-color: white; color: #27ae60; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        nav button:hover { background-color: #2ecc71; color: white; }
+        nav button.active { background-color: #1e8449; color: white; }
+
+        /* CONTENU PRINCIPAL */
+        main {
+            flex: 1;
+            padding-top: 180px;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #27ae60;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* CARTES DE CONTENU */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #27ae60;
+            overflow: hidden;
+        }
+
+        .info-card h3 {
+            color: #27ae60;
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .source-meta {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            border-left: 3px solid #bdc3c7;
+        }
+
+        .img-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .info-card:hover .img-container img { transform: scale(1.05); }
+
+        ul.key-points {
+            list-style: none;
+            padding: 0;
+        }
+        
+        ul.key-points li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+        }
+        
+        ul.key-points li::before {
+            content: "•";
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        .highlight-box {
+            background: #eafaf1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px dashed #27ae60;
+        }
+
+        .citation {
+            font-style: italic;
+            color: #555;
+            padding: 15px 20px;
+            border-left: 4px solid #f39c12;
+            background: #fdfefe;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .citation.oppose { border-left-color: #2980b9; }
+
+        .citation strong {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #333;
+            font-style: normal;
+        }
+
+        /* ANIMATION */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* FOOTER */
+        footer {
+            background-color: #27ae60;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 30px 15px;
+        }
+
+        footer .left,
+        footer .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer .left p, footer .right p {
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            nav { flex-direction: column; gap: 8px; }
+            footer { flex-direction: column; gap: 15px; }
+            footer .left, footer .right { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="header">    
+    <h1>Bien-être des animaux dans les parcs animaliers</h1>
+    <nav>
+        <button onclick="location.href='index.html'">Menu</button>
+        <button class="active" onclick="location.href='revue_presse.html'">Revue de presse</button>
+        <button onclick="location.href='revue_scientifique.html'">Revue scientifique</button>
+        <button onclick="location.href='cartographie.html'">Cartographie des acteurs</button>
+        <button onclick="location.href='frise.html'">Évolution du Droit Animalier</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 class="main-title">Revue de Presse & Actualités</h2>
+
+        <div class="info-card reveal">
+            <h3>📰 La fin des cétacés en France</h3>
+            <div class="source-meta">
+                <strong>Source :</strong> Le Monde, par Rémi Barroux, "L'avenir incertain des orques de Marineland", 12 novembre 2025.
+            </div>
+            
+            <div class="img-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/1280px-Killerwhales_jumping.jpg" alt="Orques">
+            </div>
+
+            <p>Cet article traite de l'impasse juridique et éthique concernant les dernières orques vivant en France. À l'approche de l'échéance de fin 2026, l'auteur explique que le transfert vers des parcs étrangers est contesté par les associations qui réclament des sanctuaires marins.</p>
+            
+            <h4>Idées clés :</h4>
+            <ul class="key-points">
+                <li>L'urgence législative face au calendrier de la loi 2021.</li>
+                <li>La difficulté technique et financière de créer des zones de retraite en mer.</li>
+                <li>Le conflit entre les intérêts économiques du parc et l'éthique de la remise en semi-liberté.</li>
+            </ul>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>🛡️ Le zoo comme rempart contre l'extinction</h3>
+            <div class="source-meta">
+                <strong>Source :</strong> Nature et Zoo, "Le rôle crucial des parcs EAZA dans la conservation", n°42, janvier 2026.
+            </div>
+
+            <div class="img-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/38/Rhinoc%C3%A9ros_blanc_JHE.jpg" alt="Rhinocéros">
+            </div>
+
+            <p>L'article souligne que sans les zoos, plusieurs espèces (comme le rhinocéros blanc du Nord ou certains lémuriens) auraient déjà disparu.</p>
+
+            <h4>3 axes de développement :</h4>
+            <ul class="key-points">
+                <li>La recherche scientifique effectuée in situ qui aide la protection ex situ.</li>
+                <li>Le financement des programmes de réintroduction par les billets des visiteurs.</li>
+                <li>L'évolution des enclos vers des écosystèmes complexes plutôt que de simples cages.</li>
+            </ul>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>📊 Débat : Chiffres et Opinions</h3>
+            
+            <div class="highlight-box">
+                <strong>Statistique :</strong><br>
+                "85% des Français se disent favorables à l'interdiction de la captivité des animaux sauvages à des fins de divertissement" (Sondage Ifop/30 Millions d'Amis, 2025).
+            </div>
+
+            <h4>Le choc des points de vue :</h4>
+            
+            <div class="citation">
+                "Un animal qui se reproduit n'est pas forcément un animal heureux, c'est simplement un animal qui survit"
+                <strong>— Responsable d'une ONG de protection animale</strong>
+            </div>
+
+            <div class="citation oppose">
+                "Le zoo est le seul contact direct qu'il reste à l'urbain avec la biodiversité sauvage pour susciter l'empathie et le don"
+                <strong>— Directeur de parc zoologique</strong>
+            </div>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>📝 Synthèse : Entre conservation et contestation</h3>
+            
+            <div class="img-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Tiger_in_the_water.jpg/1280px-Tiger_in_the_water.jpg" alt="Conservation Panda">
+            </div>
+            
+            <p>L'actualité récente montre que le modèle traditionnel du zoo est en pleine mutation. Le traitement médiatique du sujet révèle une fracture entre la mission scientifique de conservation, largement défendue par les institutions européennes comme l'EAZA, et une demande sociétale croissante pour l'abolition de la captivité.</p>
+
+            <p>D'une part, les articles soulignent l'efficacité des programmes de reproduction qui permettent de maintenir des banques génétiques vivantes face à la sixième extinction de masse. D'autre part, la pression législative et les enquêtes d'opinion forcent les structures à se transformer. Le concept de "zoo-refuge" émerge, où l'animal n'est plus un objet de spectacle mais un individu dont on respecte les "cinq libertés".</p>
+
+            <div class="highlight-box" style="border-style: solid; background-color: #fcfcfc;">
+                <strong>Conclusion :</strong> L'année 2026 apparaît comme une frontière : celle où la captivité purement récréative devient illégale pour certaines espèces, obligeant les parcs restants à prouver leur utilité publique et leur excellence en matière de bien-être pour survivre.
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="left">
+        <p>Léia Bischoff</p>
+        <p>Mathys Cornuaud</p>
+        <p>Cédrick Li</p>
+        <p>Kanoko Sakurai</p>
+        <p>Édouard Levesque</p>
+        <p>Zhongman Du</p>
+    </div>
+    <div class="right">
+        <p>Centrale Lille</p>
+        <p>Complexité</p>
+        <p>Mise en page et JS avec l'aide de l'IA</p>
+    </div>
+</footer>
+
+<script>
+    function reveal() {
+        var reveals = document.querySelectorAll(".reveal");
+        
+        for (var i = 0; i < reveals.length; i++) {
+            var windowHeight = window.innerHeight;
+            var elementTop = reveals[i].getBoundingClientRect().top;
+            var elementBottom = reveals[i].getBoundingClientRect().bottom;
+            var elementVisible = 100;
+
+            // CONDITION D'APPARITION : 
+            // Si le haut de l'élément entre dans la fenêtre
+            if (elementTop < windowHeight - elementVisible && elementBottom > 0) {
+                reveals[i].classList.add("active");
+            } 
+            // CONDITION DE DISPARITION : 
+            // Si l'élément sort complètement par le haut ou par le bas
+            else {
+                reveals[i].classList.remove("active");
+            }
+        }
+    }
+
+    // Gestion du header et déclenchement du reveal au scroll
+    window.addEventListener("scroll", function() {
+        const header = document.getElementById("header");
+        
+        // Effet de réduction du header
+        if (window.scrollY > 50) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
+        
+        reveal();
+    });
+
+    // Lancer une fois au chargement pour les éléments déjà visibles
+    reveal();
+</script>
+
+
+</body>
+</html>

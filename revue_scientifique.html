@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le bien-être animal</title>
+    <style>
+        /* CONFIGURATION GÉNÉRALE (Identique aux autres pages) */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #27ae60;
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 30px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header.shrink { padding: 10px 15px; }
+        header h1 { margin: 0 0 10px 0; font-size: 1.8rem; transition: font-size 0.3s ease; }
+        header.shrink h1 { font-size: 1.3rem; }
+
+        nav { margin-top: 10px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+        nav button { padding: 8px 15px; border: none; border-radius: 5px; background-color: white; color: #27ae60; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        nav button:hover { background-color: #2ecc71; color: white; }
+        nav button.active { background-color: #1e8449; color: white; }
+
+        /* CONTENU PRINCIPAL */
+        main {
+            flex: 1;
+            padding-top: 180px;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #27ae60;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* CARTES DE CONTENU */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #27ae60;
+            overflow: hidden;
+        }
+
+        .info-card h3 {
+            color: #27ae60;
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .source-meta {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            border-left: 3px solid #bdc3c7;
+        }
+
+        .img-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .info-card:hover .img-container img { transform: scale(1.05); }
+
+        ul.key-points {
+            list-style: none;
+            padding: 0;
+        }
+        
+        ul.key-points li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+        }
+        
+        ul.key-points li::before {
+            content: "•";
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        .highlight-box {
+            background: #eafaf1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px dashed #27ae60;
+        }
+
+        .citation {
+            font-style: italic;
+            color: #555;
+            padding: 15px 20px;
+            border-left: 4px solid #f39c12;
+            background: #fdfefe;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* ANIMATION */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* FOOTER */
+        footer {
+            background-color: #27ae60;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 30px 15px;
+        }
+
+        footer .left,
+        footer .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer .left p, footer .right p {
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            nav { flex-direction: column; gap: 8px; }
+            footer { flex-direction: column; gap: 15px; }
+            footer .left, footer .right { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="header">    
+    <h1>Bien-être des animaux dans les parcs animaliers</h1>
+    <nav>
+        <button onclick="location.href='index.html'">Menu</button>
+        <button onclick="location.href='revue_presse.html'">Revue de presse</button>
+        <button class="active" onclick="location.href='revue_scientifique.html'">Revue scientifique</button>
+        <button onclick="location.href='cartographie.html'">Cartographie des acteurs</button>
+        <button onclick="location.href='frise.html'">Évolution du Droit Animalier</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 class="main-title">Revue Scientifique : Analyses et Études</h2>
+
+        <div class="info-card reveal">
+            <h3>🔬 Étude 1 : Le modèle des "Cinq Domaines"</h3>
+            <div class="source-meta">
+                <strong>Source :</strong> Villarroya et al. (2024/2025), "From concept to action: Operationalising animal welfare strategies in zoos and aquaria", Cambridge.
+            </div>
+            
+            <div class="img-container">
+                <img src="chimpe.png" alt="Chimpanzé en zoo moderne">
+            </div>
+
+            <p>Ce papier est fondamental car il définit la stratégie opérationnelle des zoos modernes. Il propose de passer d'une évaluation passive à une gestion proactive basée sur les "états affectifs".</p>
+            
+            <p>L'article soutient que le bien-être ne doit plus être considéré comme la simple "absence de souffrance".</p>
+
+            <h4>Points clés :</h4>
+            <ul class="key-points">
+                <li><strong>Centralité du ressenti (feeling) :</strong> Priorité donnée à l'état mental par rapport au simple fonctionnement biologique.</li>
+                <li><strong>Modèle économique :</strong> Nécessité pour les zoos d'intégrer une stratégie de bien-être directement dans leur gestion financière.</li>
+                <li><strong>Attentes sociétales :</strong> Les demandes du public influencent désormais directement les priorités de la recherche scientifique.</li>
+            </ul>
+
+            <div class="citation">
+                "Si les besoins psychologiques sont satisfaits, la santé physique suivra probablement." </div>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>📊 Étude 2 : Budgets-temps (Sauvage vs Captif)</h3>
+            <div class="source-meta">
+                <strong>Source :</strong> Kelly, R., Freeman, M., & Rose, P. (2025), "What behavior is important behavior? A systematic review of how wild and zoo-housed animals differ", Frontiers in Ethology.
+            </div>
+
+            <div class="img-container">
+                <img src="https://lejournal.cnrs.fr/sites/default/files/styles/vignettes/public/assets/images/cnrs_20140001_2129_vp.jpg?itok=nfJe73cF" alt="Comportement animal">
+            </div>
+
+            <p>Cette méta-analyse massive compare comment les animaux utilisent leur temps en milieu naturel versus en captivité. Elle montre que les animaux en zoo passent beaucoup moins de temps à chercher de la nourriture (foraging) et à se reproduire.</p>
+
+            <h4>Résultats majeurs :</h4>
+            <ul class="key-points">
+                <li><strong>Stéréotypies :</strong> Les comportements anormaux répétitifs remplacent souvent les activités naturelles manquantes.</li>
+                <li><strong>Adaptabilité inégale :</strong> Les espèces "généralistes" s'adaptent mieux que les "spécialistes".</li>
+                <li><strong>Enrichissement :</strong> Les méthodes actuelles restent souvent insuffisantes pour les espèces migratrices ou à forte complexité sociale.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>Donnée statistique :</strong> Les comportements anormaux sont systématiquement plus élevés en zoo chez les espèces possédant un large domaine vital à l'état sauvage.
+            </div>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>🐬 Étude 3 : Le cas critique des cétacés</h3>
+            <div class="source-meta">
+                <strong>Source :</strong> Marino L. et al. (2025), "An update on captive cetacean welfare", publié dans PeerJ.
+            </div>
+
+            <div class="img-container">
+                <img src="https://1.bp.blogspot.com/-sDcKOqzHAL4/YCFkHorzxGI/AAAAAAABKjc/XEoW-B9WmX8Sj-McknPOQGAwo7Xp35YyACNcBGAsYHQ/s2000/WSP%2B0.jpg" alt="Cétacés en bassin">
+            </div>
+
+            <p>Cette mise à jour des connaissances neurologiques et comportementales sur les dauphins et orques souligne l'incompatibilité fondamentale de leurs besoins biologiques avec les bassins actuels.</p>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>📝 Synthèse de Littérature : De la Biologie à l'Émotion</h3>
+            
+            <div class="img-container">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTikEpUh9hlNlE0pxO0_fKJXL4KfXXeuTM5JQ&s" alt="Primates et complexité">
+            </div>
+
+            <p>La littérature scientifique (2024-2026) confirme une transition majeure : le bien-être animal est désormais défini par la science comme un <strong>état mental subjectif</strong>. La santé physique seule n'est plus un indicateur suffisant de la qualité de vie.</p>
+
+            <p>Les revues récentes mettent en évidence un "conflit d'agentivité" : en contrôlant tout (reproduction, nourriture, social), les parcs réduisent la capacité des animaux à être acteurs de leur vie, générant des comportements anormaux (primates, cétacés).</p>
+
+            <p>Cependant, la science montre aussi que les infrastructures "immersives" et l'entraînement médical positif améliorent significativement le ressenti émotionnel par rapport aux anciennes méthodes de contention.</p>
+
+            <div class="highlight-box" style="border-style: solid; background-color: #fcfcfc;">
+                <strong>Conclusion du consensus :</strong> Le futur des parcs dépend de leur capacité à offrir non seulement de l'espace, mais surtout du <strong>choix</strong> et de la <strong>complexité cognitive</strong>. La recherche s'oriente vers des indicateurs de "bonheur" (hormones de plaisir, jeu) pour valider le maintien ou non de certaines espèces en captivité d'ici la fin de la décennie.
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="left">
+        <p>Léia Bischoff</p>
+        <p>Mathys Cornuaud</p>
+        <p>Cédrick Li</p>
+        <p>Kanoko Sakurai</p>
+        <p>Édouard Levesque</p>
+        <p>Zhongman Du</p>
+    </div>
+    <div class="right">
+        <p>Centrale Lille</p>
+        <p>Complexité</p>
+        <p>Mise en page et JS avec l'aide de l'IA</p>
+    </div>
+</footer>
+
+<script>
+    function reveal() {
+        var reveals = document.querySelectorAll(".reveal");
+        
+        for (var i = 0; i < reveals.length; i++) {
+            var windowHeight = window.innerHeight;
+            var elementTop = reveals[i].getBoundingClientRect().top;
+            var elementBottom = reveals[i].getBoundingClientRect().bottom;
+            var elementVisible = 100;
+
+            // CONDITION D'APPARITION : 
+            // Si le haut de l'élément entre dans la fenêtre
+            if (elementTop < windowHeight - elementVisible && elementBottom > 0) {
+                reveals[i].classList.add("active");
+            } 
+            // CONDITION DE DISPARITION : 
+            // Si l'élément sort complètement par le haut ou par le bas
+            else {
+                reveals[i].classList.remove("active");
+            }
+        }
+    }
+
+    // Gestion du header et déclenchement du reveal au scroll
+    window.addEventListener("scroll", function() {
+        const header = document.getElementById("header");
+        
+        // Effet de réduction du header
+        if (window.scrollY > 50) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
+        
+        reveal();
+    });
+
+    // Lancer une fois au chargement pour les éléments déjà visibles
+    reveal();
+</script>
+
+
+</body>
+</html> 

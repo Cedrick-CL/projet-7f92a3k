@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le bien-être animal</title>
+    <style>
+        /* CONFIGURATION GÉNÉRALE POUR LE FOOTER EN BAS */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #27ae60;
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 30px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header.shrink {
+            padding: 10px 15px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            transition: font-size 0.3s ease;
+        }
+
+        header.shrink h1 {
+            font-size: 1.3rem;
+        }
+
+        nav {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: white;
+            color: #27ae60;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        nav button:hover {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        /* CONTENU PRINCIPAL */
+        main {
+            flex: 1;
+            padding-top: 180px;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #27ae60;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* CARTES DE CONTENU */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #27ae60;
+            overflow: hidden;
+        }
+
+        .info-card h3 {
+            color: #27ae60;
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* IMAGES DANS LES CARTES */
+        .img-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .info-card:hover .img-container img {
+            transform: scale(1.05);
+        }
+
+        /* GRILLE DES RÔLES */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .role-item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #2ecc71;
+        }
+
+        /* MISES EN AVANT */
+        .highlight-box {
+            background: #eafaf1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px dashed #27ae60;
+        }
+
+        /* Style spécifique pour la problématique */
+        .problematique-box {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .problematique-box::before {
+            content: "Problématique";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e74c3c;
+            color: white;
+            padding: 2px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .case-study {
+            background: #fff5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .case-study .img-small {
+            height: 250px;
+            margin-top: 15px;
+        }
+
+        .citation {
+            font-style: italic;
+            color: #555;
+            padding-left: 20px;
+            border-left: 3px solid #ccc;
+            margin: 20px 0;
+        }
+
+        /* ANIMATION REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #27ae60;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 30px 15px;
+        }
+
+        footer .left,
+        footer .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer .left p, footer .right p {
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            nav { flex-direction: column; gap: 8px; }
+            footer { flex-direction: column; gap: 15px; }
+            footer .left, footer .right { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="header">    
+    <h1>Bien-être des animaux dans les parcs animaliers</h1>
+    <nav>
+        <button onclick="location.href='index.html'">Menu</button>
+        <button onclick="location.href='revue_presse.html'">Revue de presse</button>
+        <button onclick="location.href='revue_scientifique.html'">Revue scientifique</button>
+        <button onclick="location.href='cartographie.html'">Cartographie des acteurs</button>
+        <button onclick="location.href='frise.html'">Évolution du Droit Animalier</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 class="main-title">Présentation de la Controverse</h2>
+
+        <div class="info-card reveal">
+            <h3>👥 Groupe de TD et rôles</h3>
+            <div class="roles-grid">
+                <div class="role-item"><strong>Chef de groupe :</strong> Bischoff Léia</div>
+                <div class="role-item"><strong>Cartographe :</strong> Cornuaud Mathys</div>
+                <div class="role-item"><strong>Webmaster :</strong> Li Cédrick</div>
+                <div class="role-item"><strong>Enquêteurs :</strong> Sakurai Kanoko, Du Zhongman, Levesque Edouard</div>
+            </div>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>🔍 Choix de la controverse</h3>
+            
+            <div class="img-container">
+                <img src="https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&q=80&w=1000" alt="Parc animalier et visiteurs">
+            </div>
+
+            <p>Les parcs animaliers sont des moyens de divertissement très répandus (actuellement <strong>220 en France</strong> et plus de 10 000 dans le monde). Cependant, la plupart d’entre eux sont uniquement construits pour le divertissement ou à but lucratif. Cela suscite une certaine opposition qui entraîne donc des avis très mitigés.</p>
+            
+            <div class="highlight-box">
+                Ainsi, ce sujet est assez controversé : les parcs animaliers tels que les zoos peuvent « protéger » une espèce en voie de disparition d’après certaines personnes, alors que cela reste principalement des animaux en captivité. C'est une expérience irréversible pour certains animaux qui ne sont alors plus adaptés à la vie sauvage dans le cas où les parcs décideraient de leur « rendre » leur liberté.
+            </div>
+
+            <p>De plus, ces animaux sont parfois utilisés en tant que « bête de foire » et ne sont pas traités avec respect : ils doivent faire des tours pour faire plaisir au public et sont parfois mal lotis et mal nourris. Sans parler des effets considérables qu’ont la captivité et la solitude sur la santé de l’animal (certains comportements naturels sont fondamentalement incompatibles avec la captivité des zoos).</p>
+            
+            <p>Qui plus est, certains zoos sont parfois « obligés » d’euthanasier des animaux en surpopulation (exemple : <strong>12 babouins de Guinée euthanasiés au zoo de Nuremberg</strong> le 29/07/2025). Une pauvreté de traitement qui témoigne de l’incapacité des zoos à s’adapter aux lois naturelles ; la régulation artificielle (en opposition à l’auto-régulation) est inconfortable car elle soulève de nombreuses questions morales.</p>
+
+            <p class="citation">
+                "Tout animal étant un être sensible doit être placé par son propriétaire dans des conditions compatibles avec les impératifs biologiques de son espèce" <br>
+                <small>— Article 9 de la loi du 10 juillet 1976 relative à la protection de la nature</small>
+            </p>
+            <p>Cette loi garantit un traitement correct. Mais...</p>
+
+            <div class="problematique-box">
+                La liberté ne figure-t-elle pas elle-même parmi les impératifs biologiques de l'animal ?
+                Les parcs animaliers permettent-ils le bien être animalier ?
+            </div>
+        </div>
+
+        <div class="info-card reveal">
+            <h3>💡 Explication de la controverse</h3>
+            
+            <div class="img-container">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlmEaft2Y5BvLmfxgvgwkP2FacZIB85ZYcdQ&s" alt="Animal derrière une grille">
+            </div>
+
+            <p><strong>Pourquoi ce thème ?</strong> Les zoos sont un sujet qui suscite de nombreux débats, notamment autour du bien-être et de la protection. Comme plusieurs acteurs sont impliqués, nous avons pensé que c’était un thème riche, relativement facile à analyser, et permettant d'entrer aisément en contact avec des spécialistes.</p>
+
+            <p>Nous avons aussi choisi ce sujet car même si le débat est ouvert depuis plusieurs années, <strong>aucune réelle mesure n’a été prise</strong>. Par exemple, si les établissements itinérants ont l’interdiction de faire des spectacles d’animaux sauvages, cela ne concerne aucunement les aquariums ou les zoos qui sont des établissements fixes.</p>
+            
+            <div class="case-study">
+                Plus personnellement, nous trouvons la situation attristante. Certains animaux sont malheureux d’être enfermés et se laissent mourir.
+                <br><br>
+                <strong>Le cas Kiska :</strong> Qualifiée de "l'orque la plus seule au monde", elle est restée enfermée seule dans un bassin durant les dernières années de sa vie.
+                <div class="img-container img-small">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/1280px-Killerwhales_jumping.jpg" alt="Orque en captivité">
+                </div>
+            </div>
+
+            <p>Nombre d'individus ne sont pas impassibles face à cette situation et militent pour la prise de mesures (associations comme <strong>One Voice</strong> [non violente], ou le <strong>Front de libération des animaux</strong> [éco-terroristes]).</p>
+
+            <p>La principale difficulté de la lutte contre les combats de coqs de Norrent-Fontes ou la corrida en Espagne, c'est la fermeté de l'ancrage dans la culture locale. Identiquement, les parcs animaliers sont des attractions très anciennes et des divertissements communs aujourd'hui (zoo de Schönbrunn ouvert en 1752, ménageries au XIIe siècle). Pour cette raison entre autres, le sujet est particulièrement controversé.</p>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="left">
+        <p>Léia Bischoff</p>
+        <p>Mathys Cornuaud</p>
+        <p>Cédrick Li</p>
+        <p>Kanoko Sakurai</p>
+        <p>Édouard Levesque</p>
+        <p>Zhongman Du</p>
+    </div>
+    <div class="right">
+        <p>Centrale Lille</p>
+        <p>Compléxité</p>
+        <p>Mise en page et JS fait en partie avec l'aide de l'IA</p>
+    </div>
+</footer>
+<script>
+    function reveal() {
+        var reveals = document.querySelectorAll(".reveal");
+        
+        for (var i = 0; i < reveals.length; i++) {
+            var windowHeight = window.innerHeight;
+            var elementTop = reveals[i].getBoundingClientRect().top;
+            var elementBottom = reveals[i].getBoundingClientRect().bottom;
+            var elementVisible = 100;
+
+            // CONDITION D'APPARITION : 
+            // Si le haut de l'élément entre dans la fenêtre
+            if (elementTop < windowHeight - elementVisible && elementBottom > 0) {
+                reveals[i].classList.add("active");
+            } 
+            // CONDITION DE DISPARITION : 
+            // Si l'élément sort complètement par le haut ou par le bas
+            else {
+                reveals[i].classList.remove("active");
+            }
+        }
+    }
+
+    // Gestion du header et déclenchement du reveal au scroll
+    window.addEventListener("scroll", function() {
+        const header = document.getElementById("header");
+        
+        // Effet de réduction du header
+        if (window.scrollY > 50) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
+        
+        reveal();
+    });
+
+    // Lancer une fois au chargement pour les éléments déjà visibles
+    reveal();
+</script>
+
+
+</body>
+</html>
